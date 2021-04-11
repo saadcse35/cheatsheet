@@ -1,0 +1,9 @@
+git init
+
+git remote add origin "---------link--------"
+
+git add -A 
+
+git commit -m "commit comment"
+
+git push -u origin master
