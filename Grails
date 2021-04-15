@@ -1,6 +1,11 @@
 Grails localhost port change:
  -Dserver.port 8090 run-app
  
+ IN BuildConfig.groovy file:
+ 
+ grails.server.port.http = 9090
+
+ 
  
 
  
