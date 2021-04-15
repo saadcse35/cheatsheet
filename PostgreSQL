@@ -2,3 +2,49 @@ ENABLE DISABEL ALL CONSTRAINS IN TABLE:
   ALTER TABLE public.cmn_core_person DISABLE TRIGGER ALL;
   
   ALTER TABLE public.cmn_core_person ENABLE TRIGGER ALL;
+  
+  
+  
+ALTER TABLE public.cmn_acl_action_pair DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_menu DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_person_user_typ DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_role DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_role_task DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_user DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_acl_user_task DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_core_org DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_core_person DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_dt_code_generator DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_dt_lang DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_dt_loc DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_log_access DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_log_activity DISABLE TRIGGER ALL;
+
+ALTER TABLE public.cmn_log_name_change DISABLE TRIGGER ALL;
+
+ALTER TABLE public.crm_pi_customer DISABLE TRIGGER ALL;
+
+ALTER TABLE public.hrm_ei_emp DISABLE TRIGGER ALL;
+
+ALTER TABLE public.hrm_stp_desig DISABLE TRIGGER ALL;
+
+ALTER TABLE public.web_cms_slider DISABLE TRIGGER ALL;
+ALTER TABLE public.web_ecom_book DISABLE TRIGGER ALL;
+
+ALTER TABLE public.web_stp_author DISABLE TRIGGER ALL;
+ALTER TABLE public.web_stp_category DISABLE TRIGGER ALL;
+ALTER TABLE public.web_stp_publication DISABLE TRIGGER ALL;
+
