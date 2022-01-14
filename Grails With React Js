@@ -1,1 +1,3 @@
-grails create-app grails-react --profile=react
+grails create-app grails-react --profile=react                                          ----for creating app with react
+gradlew client:start                    --- for start react app as client
+gradlew server:bootRun                     ------for start grails app ...as server.
