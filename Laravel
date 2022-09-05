@@ -1,0 +1,3 @@
+/// Creating Model, migration, controller at a time.
+
+php artisan make:model CourseSetup/category -mcr
