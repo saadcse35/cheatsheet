@@ -1,0 +1,28 @@
+
+if ($the_query->have_posts()) {
+    ?>
+    <div class="rst-testimonial-slider">
+        <?php
+        while ($the_query->have_posts()) {
+            $the_query->the_post();
+            ?>
+            <div class="rst-testimonial-slider-item">
+                <div class="rst-testimonial-slider-item-content">
+                    <?php the_content(); ?>
+                </div>
+                <div class="rst-testimonial-slider-item-author">
+                    <div class="rst-testimonial-slider-item-author-image">
+                        <?php the_post_thumbnail(); ?>
+                    </div>
+                    <div class="rst-testimonial-slider-item-author-info">
+                        <h3 class="rst-testimonial-slider-item-author-info-name"><?php the_title(); ?></h3>
+                        <p class="rst-testimonial-slider-item-author-info-designation"><?php echo get_post_meta(get_the_ID(), 'designation', true); ?></p>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
+    </div>
+    <?php
+}
