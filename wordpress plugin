@@ -26,3 +26,17 @@ if ($the_query->have_posts()) {
     </div>
     <?php
 }
+
+
+
+.oqc_invoice_box .oqc_order_status_title {
+                <?php if ($order_status == 'completed') { ?> color: #335CFF !important;
+                <?php } else if($order_status == 'cancelled'){ ?> color: red !important;
+                <?php }else if($order_status == 'refunded'){ ?> color: red !important;
+                <?php }else if($order_status == 'failed'){ ?> color: red !important;
+                <?php }else if($order_status == 'pending'){ ?> color: #FFC300 !important;
+                <?php }else if($order_status == 'processing'){ ?> color: #0ACCE0 !important;
+                <?php }else if($order_status == 'on-hold'){ ?> color: #FFC300 !important;
+                <?php }else if($order_status == 'trash'){ ?> color: red !important;
+                <?php } ?>
+                }
