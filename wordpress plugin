@@ -40,3 +40,54 @@ if ($the_query->have_posts()) {
                 <?php }else if($order_status == 'trash'){ ?> color: red !important;
                 <?php } ?>
                 }
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                #Calling 2nd APi for getting Country Full name
+
+                    #Assigning the endpoint and apikey is same as above
+                    $endpoint2 = 'https://api.vatsense.com/1.0/rates?country_code=' . $country_code;
+
+                    #set curl options
+                    curl_setopt($ch, CURLOPT_URL, $endpoint2);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+                    curl_setopt($ch, CURLOPT_USERPWD, 'user:' . $apikey);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+                    $response2 = curl_exec($ch);
+
+                    curl_close($ch);
+
+                    header('Content-Type: application/json');
+
+                    #Decode the response in json format
+                    $json = json_decode($response2, true);
+
+                    #check if the response is Success & the status code is 200
+                    if ($json['success'] && $json['code'] == 200) {
+
+                        $country_name = $json['data']['country_name'];
+
+                        echo('<br>');
+                        echo('Country Name: ' . $country_name);
+
+
+                    } else {
+                        $error_title = $json['error']['title'];
+                        $error_detail = $json['error']['detail'];
+
+                        echo('<div class="error"><p>' . esc_attr__("Error: $error_title. $error_detail", "gravity-data-loader") . '</p></div>');
+                    }
+
+                    #End of 2nd API
