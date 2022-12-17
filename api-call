@@ -1,0 +1,41 @@
+<script type="text/javascript">
+        window.onload = function () {
+            document.getElementById('input_1_1').addEventListener('change', myFunction);
+
+            function myFunction() {
+
+                var vat_number = document.getElementById('input_1_1').value;
+                vat_number = vat_number.toUpperCase();
+
+                debugger;
+
+                //call data from api using XMLHttpRequest
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+
+                        var response = JSON.parse(this.responseText);
+
+                        console.log(response);
+
+                        var vat_number = response['vat_number'];
+                        var company_name = response['company_name'];
+                        var address_line_1 = response['address_line_1'];
+                        var address_city = response['address_city'];
+                        var postcode = response['postcode'];
+                        var address_country = response['address_country'];
+                        var country_full_name = response['country_full_name'];
+                        var country_code = response['country_code'];
+
+                        //populate form fields
+                        document.getElementById('input_1_3').value = company_name;
+                        document.getElementById('input_1_4').value = address_line_1 + ', ' + country_full_name + ', ' + postcode;
+                    }
+                };
+                xhttp.open("GET", "<?php echo $site_url; ?>/wp-content/plugins/gravity-data-loader/main/api-call.php?vat_number=" + vat_number, true);
+
+                xhttp.send();
+            }
+        }
+
+    </script>
