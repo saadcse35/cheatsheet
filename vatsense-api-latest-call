@@ -1,0 +1,66 @@
+var gdl_xhttp = new XMLHttpRequest();
+                
+                gdl_xhttp.open("GET", "<?php echo $site_url; ?>/wp-content/plugins/gravity-data-loader/main/api-call.php?vat_number=" + vat_number, true);
+
+                gdl_xhttp.send();
+
+
+
+
+gdl_xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+
+                        try {
+                            var response = JSON.parse(this.responseText);
+                        } catch (e) {
+
+
+                            alert('Sorry, No data found for this VAT ID.');
+                            return;
+                        }
+
+                        console.log(response);
+
+                        var vat_number = response['vat_number'];
+                        var company_name = response['company_name'];
+                        var address_line_1 = response['address_line_1'];
+                        var address_city = response['address_city'];
+                        var postcode = response['postcode'];
+                        var address_country = response['address_country'];
+                        var country_full_name = response['country_full_name'];
+                        var country_code = response['country_code'];
+
+
+                        //check the response
+                        if (response['error']) {
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_company_field_id); ?>').value = '';
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_field_id); ?>').value = '';
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_city_field_id); ?>').value = '';
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_post_code_field_id); ?>').value = '';
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_country_field_id); ?>').value = '';
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_country_field_id); ?>').value = '';
+                            alert(response['error']);
+                        } else {
+                            //populate form fields
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_company_field_id); ?>').value = company_name;
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_field_id); ?>').value = address_line_1;
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_city_field_id); ?>').value = address_city;
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_post_code_field_id); ?>').value = postcode;
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_country_field_id); ?>').value = address_country;
+                            document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_country_field_id); ?>').value = country_full_name;
+                        }
+
+                    } else if (this.readyState === 4 && this.status === 404) {
+                        alert('API not found');
+                    } else if (this.readyState === 4 && this.status === 500) {
+                        alert('Sorry, No data found for this VAT ID');
+
+                    } else {
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_company_field_id); ?>').value = '';
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_field_id); ?>').value = '';
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_city_field_id); ?>').value = '';
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_post_code_field_id); ?>').value = '';
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_address_country_field_id); ?>').value = '';
+                        document.getElementById('input_<?php echo esc_attr($gdl_form_id); ?>_<?php echo esc_attr($gdl_country_field_id); ?>').value = '';
+                    }
+                };
