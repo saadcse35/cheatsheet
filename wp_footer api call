@@ -1,3 +1,14 @@
+#Get Vat Field in Form using Gravity Forms API
+$gdl_vat_form = GFAPI::get_form($gdl_form_id);
+$gdl_vat_field = GFAPI::get_field($gdl_vat_form, $gdl_vat_input_id);
+
+
+#get the field value from form
+$gdl_vat_field_value = GFFormsModel::get_field_value($field);
+
+
+
+
 function gdl_api_js_code_example() {
     #Get the Site URL
     $site_url = get_site_url();
