@@ -1,0 +1,16 @@
+add_action('admin_init', 'cf72sa_check_cf7_is_active');
+
+if (!function_exists('cf72sa_check_cf7_is_active')) {
+
+    function cf72sa_check_cf7_is_active()
+    {
+        if (!is_plugin_active('contact-form-7/wp-contact-form-7.php')) {
+            add_action('admin_notices', function () {
+
+                echo '<div class="error"><p>' . esc_html__('Contact Form 7 to Social Apps Assembling plugin is activated but it does not work. Because it requires Contact Form 7 plugin installed and activated.', 'cf7-to-social-apps-assembling') . '</p></div>';
+
+            });
+
+        }
+    }
+}
