@@ -1,0 +1,18 @@
+public function cf72sa_enqueue_admin_scripts()
+        {
+            wp_enqueue_style('cf72sa-admin-css', plugins_url('main/assets/css/cf72sa-admin-style.css', __FILE__), array(), time());
+            wp_enqueue_script('cf72sa-admin-script-js', plugins_url('main/assets/js/cf72sa-admin-scripts.js', __FILE__), array('jquery'), time(), true);
+
+            wp_enqueue_style('cf72sa-admin-css', plugin_dir_path(__FILE__) . '../main/assets/css/cf72sa-admin-style.css', array(), time(), 'all');
+            wp_enqueue_script('cf72sa-admin-script-js', plugin_dir_path(__FILE__) . '../main/assets/js/cf72sa-admin-scripts.js', array('jquery'), time(), true);
+        }
+
+        public function cf72sa_enqueue_scripts()
+        {
+            wp_register_script("cf72sa_script", plugin_dir_path(__FILE__) . '../main/assets/js/cf72sa-front-script.js', array('jquery'), time(), true);
+
+            wp_register_script("cf72sa_script", plugins_url('main/assets/js/cf72sa-front-script.js', __FILE__), array('jquery'), time(), true);
+
+            wp_enqueue_script("cf72sa_script");
+            wp_localize_script('cf72sa_script', 'myAjax', array('ajaxurl' => admin_url('admin-ajax.php')));
+        }
