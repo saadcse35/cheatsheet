@@ -6,4 +6,8 @@ git add -A
 
 git commit -m "commit comment"
 
-git push -u origin master
+git push -u origin main
+
+
+---- Force to Push command
+git push -f origin main
