@@ -1,0 +1,31 @@
+# Send Whatsapp Message after mail sent
+        static function cf72sa_send_wh_message($contactform)
+        {
+            $form_id = $contactform->id();
+            $cf72sa_option = get_option('cf72sa_connect_sa_' . $form_id, $default = false);
+            $cf72sa_other_whatsapp_number = get_option('cf72sa_alter_wh_number_' . $form_id, $default = false);
+            $form_title = $contactform->title();
+
+            if (isset($cf72sa_option['cf72sa_status']) && !empty($cf72sa_option['cf72sa_status']) && isset($cf72sa_option['cf72sa_phone_number']) && !empty($cf72sa_option['cf72sa_phone_number'])) {
+                $inputs = array();
+                $submission = WPCF7_Submission::get_instance();
+                $inputs = $submission->get_posted_data();
+
+                $inputs['form-id'] = $form_id;
+                $inputs['form-title'] = $form_title;
+                $inputs['_site_title'] = get_bloginfo('name');
+                $inputs['_site_url'] = get_bloginfo('url');
+                $new_msg = CF72SA_Send_WA_Message::cf72sa_get_message_from_cf7($form_id, $inputs);
+
+                $wh_url = "https://wa.me/" . $cf72sa_option['cf72sa_phone_number'] . "/?text=" . urlencode(html_entity_decode($new_msg));
+
+                $cf72sa_new_opt = array();
+                $cf72sa_new_opt['cf72sa_wh_url'] = $wh_url;
+                $cf72sa_new_opt['cf72sa_new_tab'] = $cf72sa_option['cf72sa_open_new_tab'];
+
+            } else {
+                $cf72sa_new_opt = array();
+            }
+            $cookie_name = "cf72sa_options";
+            setcookie($cookie_name, json_encode($cf72sa_new_opt), time() + (86400 * 30), "/");
+        }
