@@ -1,0 +1,33 @@
+# Send the message to Telegram
+        static function cf72sa_telegram_message($contactform)
+        {
+            $form_id = $contactform->id();
+            $cf72sa_option = get_option('cf72sa_connect_telegram_' . $form_id, $default = false);
+            $form_title = $contactform->title();
+
+            if (isset($cf72sa_option['cf72sa_telegram_status']) && !empty($cf72sa_option['cf72sa_telegram_status']) && isset($cf72sa_option['cf72sa_bot_id']) && !empty($cf72sa_option['cf72sa_bot_id'] && isset($cf72sa_option['cf72sa_bot_token']) && !empty($cf72sa_option['cf72sa_bot_token']))) {
+                $inputs = array();
+                $submission = WPCF7_Submission::get_instance();
+                $inputs = $submission->get_posted_data();
+
+                $inputs['form-id'] = $form_id;
+                $inputs['form-title'] = $form_title;
+                $inputs['_site_title'] = get_bloginfo('name');
+                $inputs['_site_url'] = get_bloginfo('url');
+                $new_msg = CF72SA_Send_Telegram_Message::cf72sa_get_telegram_message_from_cf7($form_id, $inputs);
+
+                $message = urlencode($new_msg);
+
+                $bot_token = $cf72sa_option['cf72sa_bot_token'];
+                $chat_id = $cf72sa_option['cf72sa_bot_id'];
+
+                $url = "https://api.telegram.org/bot$bot_token/sendMessage?text=$message&chat_id=$chat_id";
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $result = curl_exec($ch);
+                curl_close($ch);
+            }
+
+        }
