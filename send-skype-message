@@ -1,0 +1,99 @@
+<?php
+
+/*
+====================================================
+Exit if accessed directly
+====================================================
+*/
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+/*
+====================================================
+Perform the necessary actions
+====================================================
+*/
+
+
+if (!class_exists('CF72SA_Send_Skype_Message')) {
+    class CF72SA_Send_Skype_Message
+    {
+        public function __construct()
+        {
+            add_action('wpcf7_mail_sent', array('CF72SA_Send_Skype_Message', 'cf72sa_send_skype_message'));
+        }
+
+
+        # Process the Message Box
+        static function cf72sa_get_skype_message_from_cf7($form_id, $inputs)
+        {
+
+            $cf72sa_option = get_option('cf72sa_connect_skype_' . $form_id, $default = false);
+            $string = wp_unslash($cf72sa_option['cf72sa_skype_message_body']);
+
+            $ContactForm = WPCF7_ContactForm::get_instance($form_id);
+            $form_fields = $ContactForm->scan_form_tags();
+
+            if (isset($inputs) && !empty($inputs)) {
+                foreach ($inputs as $key => $value) {
+
+                    if (is_array($value)) $value = implode(", ", $value);
+                    if (strpos($string, "_format_" . $key)) {
+                        if (strpos($string, $key)) {
+                            $new_fields['[' . $key . ']'] = $value;
+                        }
+                        $start_pos_no = strpos($string, "[_format_" . $key);
+                        $end_pos_no = strpos($string, "]", strpos($string, "[_format_" . $key));
+                        $cut_str_lenth = $end_pos_no - $start_pos_no;
+                        $newString = substr($string, $start_pos_no, $cut_str_lenth);
+                        $rep_arry = array('[_format_' . $key . ' "', '"');
+                        $new_val = array('', '');
+                        $format = str_replace($rep_arry, "", $newString);
+                        $timestamp = strtotime($value);
+                        $date = date($format, $timestamp);
+                        $new_fields['[_format_' . $key . ' "' . $format . '"]'] = ($date != false) ? $date : '';
+
+                    } elseif (strpos($string, "_raw_" . $key)) {
+                        if (strpos($string, $key)) {
+                            $new_fields['[' . $key . ']'] = $value;
+                        }
+                        if (isset($form_fields) && $form_fields) {
+                            foreach ($form_fields as $form_field_key => $form_field_value) {
+
+                                if (isset($form_field_value->basetype) || $form_field_value->basetype == 'select') {
+                                    $raw_index = 0;
+                                    foreach ($form_field_value->raw_values as $raw_key => $raw_value) {
+                                        if (strpos($raw_value, $value)) {
+                                            $new_raw_index = $raw_index;
+                                            $new_fields['[_raw_' . $key . ']'] = $form_field_value->values[$new_raw_index];
+                                        }
+                                        $raw_index++;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $new_fields['[' . $key . ']'] = $value;
+                    }
+                }
+            }
+            return str_replace(array_keys($new_fields), array_values($new_fields), $string);
+        }
+
+
+        static function cf72sa_send_skype_message($contactform)
+        {
+
+
+        }
+
+    }
+
+    new CF72SA_Send_Skype_Message();
+}
+
+
+
