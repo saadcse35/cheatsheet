@@ -1,0 +1,81 @@
+<?php
+
+/*
+====================================================
+Exit if accessed directly
+====================================================
+*/
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+/*
+====================================================
+Perform the necessary actions
+====================================================
+*/
+
+
+if (!class_exists('CF72SA_Send_Messenger_Message')) {
+    class CF72SA_Send_Messenger_Message
+    {
+        public function __construct()
+        {
+            add_action('wpcf7_mail_sent', array('CF72SA_Send_Messenger_Message', 'cf72sa_send_messenger_message'));
+        }
+
+
+        # Process the Message Box
+        static function cf72sa_get_messenger_message_from_cf7($form_id, $inputs)
+        {
+
+        }
+
+
+        # Send message to messenger
+        static function cf72sa_send_messenger_message($contactform)
+        {
+
+            $app_id = '';
+
+            $app_secret_key = '';
+
+            $access_token = '';
+
+            $recipient_page_id = '';
+
+            $message = "Hello, world!";
+
+            require_once plugin_dir_path(__FILE__) . '../../lib/Facebook/autoload.php';
+
+
+            $fb = new Facebook\Facebook([
+                'app_id' => $app_id,
+                'app_secret' => $app_secret_key,
+                'default_graph_version' => 'v6.0',
+                'default_access_token' => $access_token
+            ]);
+
+            $response = $fb->post('/me/messages', [
+                'recipient' => [ 'id' => $recipient_page_id ],
+                'message' => [ 'text' => $message ],
+            ]);
+
+            $messageId = $response->getDecodedBody()['message_id'];
+
+
+        }
+    }
+
+    # Instantiate the class
+    new CF72SA_Send_Messenger_Message();
+}
+
+
+
+
+
+
+
