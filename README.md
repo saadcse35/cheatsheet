@@ -1,3 +1,3 @@
 # cheatshet
 
-All common codes used in day to day live collected here.
+All common codes used in day to day life collected here.
