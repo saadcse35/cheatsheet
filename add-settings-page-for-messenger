@@ -1,0 +1,63 @@
+<?php
+
+
+/*
+====================================================
+Exit if accessed directly
+====================================================
+*/
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+/*
+====================================================
+Create Settings Tab
+====================================================
+*/
+
+
+if (!class_exists('CF72SA_Add_Messenger_Settings_Tab')) {
+
+    class CF72SA_Add_Messenger_Settings_Tab
+    {
+        #Constructor
+        public function __construct()
+        {
+            add_action('wpcf7_editor_panels', array('CF72SA_Add_Messenger_Settings_Tab', 'cf72sa_messenger_tab'));
+            add_action('wpcf7_after_save', array('CF72SA_Add_Messenger_Settings_Tab', 'cf72sa_save_messenger_settings'));
+        }
+
+
+        #Add Settings Tab
+        static function cf72sa_messenger_tab($panels)
+        {
+            $panels['cf72sa-messenger-settings-tab'] = array(
+                'title' => __('Messenger', 'cf7-to-social-apps-assembling'),
+                'callback' => array('CF72SA_Add_Messenger_Settings_Tab', 'cf72sa_messenger_tab_content_callback')
+            );
+
+            return $panels;
+        }
+
+
+        #Settings Tab Content
+        static function cf72sa_messenger_tab_content_callback($post){
+
+            echo 'hi, I am from messenger tab';
+
+        }
+
+        #Save Settings
+        static function cf72sa_save_messenger_settings($contact_form){
+
+        }
+
+
+    }
+
+    # Instantiate the class
+    new CF72SA_Add_Messenger_Settings_Tab();
+}
