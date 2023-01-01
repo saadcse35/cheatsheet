@@ -11,3 +11,8 @@ git push -u origin main
 
 ---- Force to Push command
 git push -f origin main
+
+
+
+------------Generate SSH key Command---
+ssh-keygen -o -t rsa -C "saad.cse35@gmail.com"
