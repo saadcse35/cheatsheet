@@ -18,7 +18,7 @@ git push -f origin main
 ssh-keygen -o -t rsa -C "saad.cse35@gmail.com"
 
 
-
+### Primary Command
 echo "# test-for-learn" >> README.md
 git init
 git add README.md
