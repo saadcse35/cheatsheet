@@ -1,0 +1,27 @@
+function lmbysaad_send_message_to_line()
+    {
+        $access_token = "KdoxfN5aYig3RftIJU/sZ0/QRWYtd+8usHQU15BzysfqRipOeU3+BuCnykH5B3OgpKB9N2kmWybdZ9bz20lv5CHHutrnMlz73mJOuV6weLfS5eNkKM4fUrTghBN0IKdF82xLaNipumEdhqaYRWdHbAdB04t89/1O/w1cDnyilFU=";
+
+        $to = "1657797132";
+
+        $text = "Hello, this is a test message.";
+
+        // send message to Line
+        $url = "https://api.line.me/v2/bot/message/push";
+        $data = [
+            'to' => $to,
+            'messages' => [
+                [
+                    'type' => 'text',
+                    'text' => $text
+                ]
+            ]
+        ];
+        $post = json_encode($data);
+
+
+
+        
+
+
+    }
