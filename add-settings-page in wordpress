@@ -1,0 +1,20 @@
+### Constructor ###
+        public function __construct()
+        {
+            add_action('admin_menu', array('bgbysa_add_seetings_page', 'bgbysa_add_menu_page'));
+            add_action('admin_init', array('bgbysa_add_seetings_page', 'bgbysa_settings_save'));
+        }
+
+        #### Add Menu Page ####
+        static function bgbysa_add_menu_page()
+        {
+            add_menu_page(
+                __('Backlink Generator', 'backlink-generator'),
+                __('Backlink Generator', 'backlink-generator'),
+                'manage_options',
+                'backlink-generator',
+                array('bgbysa_add_seetings_page', 'bgbysa_settings_page_callback'),
+                'dashicons-editor-break',
+                5
+            );
+        }
