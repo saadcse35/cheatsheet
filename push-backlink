@@ -1,0 +1,3 @@
+foreach ($bgbysa_backlink_list as $bgbysa_backlink) {
+                $post_content .= '<a href="' . $bgbysa_backlink . '" target="_blank">' . $bgbysa_backlink . '</a><br>';
+            }
