@@ -1,0 +1,63 @@
+<div style="overflow-x:auto;">
+                        <table class="wp-list-table widefat fixed striped posts">
+                            <thead>
+                            <tr>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Post Title', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Link Title', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Link URL', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Link Status', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Created At', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                                <th scope="col" id="title"
+                                    class="manage-column column-title column-primary sortable desc">
+                                    <a href="#">
+                                        <span><?php esc_attr_e('Updated At', 'wp-post-link-injector') ?></span>
+                                    </a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody id="the-list">
+                            <?php
+                            global $wpdb;
+                            $table_name = $wpdb->prefix . 'post_link_injector';
+                            $results = $wpdb->get_results("SELECT * FROM $table_name");
+                            foreach ($results as $result) {
+                                ?>
+                                <tr>
+                                    <td><?php echo get_the_title($result->post_id); ?></td>
+                                    <td><?php echo get_the_title($result->link_id); ?></td>
+                                    <td><?php echo $result->link_url; ?></td>
+                                    <td><?php echo $result->link_status; ?></td>
+                                    <td><?php echo $result->created_at; ?></td>
+                                    <td><?php echo $result->updated_at; ?></td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
