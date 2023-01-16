@@ -1,3 +1,114 @@
-foreach ($bgbysa_backlink_list as $bgbysa_backlink) {
-                $post_content .= '<a href="' . $bgbysa_backlink . '" target="_blank">' . $bgbysa_backlink . '</a><br>';
-            }
+<?php
+
+#### Exit if accessed directly ####
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+if (!class_exists('bgbysa_push_backlink')) {
+    class bgbysa_push_backlink
+    {
+        ### Constructor ###
+        public function __construct()
+        {
+            add_action('publish_post', array('bgbysa_push_backlink', 'bgbysa_publish_post_callback'), 10, 2);
+        }
+
+        #### Push Backlink ####
+        static function bgbysa_publish_post_callback($post_id, $post)
+        {
+            ### Get Post Content ###
+            $post_content = $post->post_content;
+
+            $bgbysa_backlink_list = get_option('bgbysa_backlink_list');
+
+            ### separate the backlink list by comma ###
+            $bgbysa_backlink_list = explode(',', $bgbysa_backlink_list);
+
+            $bgbysa_backlink_list = array_filter($bgbysa_backlink_list);
+
+            $bgbysa_backlink_list = array_map('trim', $bgbysa_backlink_list);
+
+            $bgbysa_backlink_list = array_unique($bgbysa_backlink_list);
+
+            $bgbysa_backlink_list = array_values($bgbysa_backlink_list);
+
+            ### push backlink to post content ###
+            $bgbysa_link_number = get_option('bgbysa_link_number');
+
+            $bgbysa_link_slice = array_slice($bgbysa_backlink_list, 0, $bgbysa_link_number);
+
+            ### After slicing array we need to remove the sliced elements from the original array ###
+            $bgbysa_backlink_list = array_diff($bgbysa_backlink_list, $bgbysa_link_slice);
+
+            ### Update the backlink list ###
+            update_option('bgbysa_backlink_list', implode(',', $bgbysa_backlink_list));
+
+            ### for first post insert first 4 link the for 2nd post insert next 4 link and so on ###
+            $bgbysa_link_slice = array_map(function ($link) {
+                return '<a href="' . $link . '" target="_blank">' . $link . '</a>';
+            }, $bgbysa_link_slice);
+
+            $bgbysa_link_slice = implode(' ', $bgbysa_link_slice);
+
+            $post_content = $post_content . ' ' . $bgbysa_link_slice;
+
+            ### Update the post content ###
+
+            $post->post_content = $post_content;
+
+            wp_update_post($post);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            $bgbysa_link_slice_return = array_map(function ($link) {
+                return '<a href="' . $link . '" target="_blank">' . $link . '</a>';
+            }, $bgbysa_link_slice);
+
+
+            $bgbysa_link_slice_return = implode('<br>', $bgbysa_link_slice_return);
+
+            $bgbysa_link_slice_return = '<p>' . $bgbysa_link_slice_return . '<p>';
+
+            $post_content = $post_content . '<br>' . $bgbysa_link_slice_return;
+
+            $post_content = $post_content . ' ' . $bgbysa_link_slice_return;
+
+            ### Update Post Content ###
+
+            $post_data = array(
+                'ID' => $post_id,
+                'post_content' => $post_content,
+            );
+
+            wp_update_post($post_data);
+
+            ### Update Post Meta ###
+
+            update_post_meta($post_id, 'bgbysa_backlink_pushed', 'yes');
+
+            ### Update Post Meta ###
+
+            update_post_meta($post_id, 'bgbysa_backlink_pushed_date', date('Y-m-d H:i:s'));
+
+        }
+
+    }
+
+    ### Initiate Class ###
+    new bgbysa_push_backlink();
+}
