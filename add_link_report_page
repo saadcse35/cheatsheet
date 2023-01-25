@@ -1,0 +1,416 @@
+<?php
+
+#### Exit if accessed directly ####
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+if (!class_exists('bgbysa_add_links_report_page')) {
+    class bgbysa_add_links_report_page
+    {
+        ### Constructor ###
+        public function __construct()
+        {
+            add_action('admin_menu', array('bgbysa_add_links_report_page', 'bgbysa_add_menu_page'));
+            add_action('admin_init', array('bgbysa_add_links_report_page', 'bgbysa_button_action'));
+        }
+
+        #### Add Sub Menu Page ####
+        static function bgbysa_add_menu_page()
+        {
+
+            add_submenu_page('edit.php?post_type=post-link-injector', 'Links Report', 'Links Report', 'manage_options', 'links-report', array('bgbysa_add_links_report_page', 'bgbysa_settings_page_callback'));
+        }
+
+        #### Settings Page Callback ####
+        static function bgbysa_settings_page_callback()
+        {
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'post_link_injector';
+
+            $total_completed = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE link_status = '1'");
+            $total_pending = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE link_status = '0'");
+
+            ?>
+            <style>
+                .hsgbysaad_container table {
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 100%;
+                    border: 1px solid #ddd;
+                }
+
+                .hsgbysaad_container th, td {
+                    text-align: left;
+                    padding: 8px;
+                }
+
+                .hsgbysaad_container tr:nth-child(even) {
+                    background-color: #f2f2f2
+                }
+
+
+                .hsgbysaad_container {
+                    width: 50%;
+                    border: 2px solid #ccc;
+                    border-radius: 5px;
+                    background-color: white;
+                    padding: 20px;
+                }
+
+                .hsgbysaad_container input[type=number], input[type=text], select {
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    resize: vertical;
+                }
+
+                .hsgbysaad_container textarea {
+                    width: 120%;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    resize: vertical;
+                }
+
+                .hsgbysaad_container label {
+                    padding: 12px 12px 12px 0;
+                    display: inline-block;
+                }
+
+
+                .hsgbysaad_container .oqc_frm_title {
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+
+                .hsgbysaad_container .col-15 {
+
+                    width: 25%;
+                    margin-top: 6px;
+                }
+
+                .hsgbysaad_container .col-85 {
+                    float: left;
+                    width: 75%;
+                    margin-top: 6px;
+                }
+
+                /* Clear floats after the columns */
+                .hsgbysaad_container .row:after {
+                    content: "";
+                    display: table;
+                    clear: both;
+                }
+
+                /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+
+                @media screen and (min-device-width: 768px) {
+                    .hsgbysaad_container {
+                        width: 90%;
+                    }
+
+                }
+
+
+                @media screen and (max-width: 600px) {
+                    .hsgbysaad_container {
+                        width: 90%;
+                    }
+
+
+                    .hsgbysaad_container input[type=number], input[type=text], select, textarea, .col-15, .col-85 {
+                        width: 45%;
+                        margin-top: 0;
+                    }
+
+                    .hsgbysaad_container input[type=number] {
+                        width: 80% !important;
+                        margin-top: 0;
+                    }
+                }
+
+                .pagination {
+                    display: inline-block;
+                    float: right;
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                }
+
+                .pagination a {
+                    color: black;
+                    float: left;
+                    padding: 8px 16px;
+                    text-decoration: none;
+                    transition: background-color .3s;
+                    border: 1px solid #ddd;
+                    margin: 0 4px;
+                }
+
+                .pagination a.active {
+                    background-color: #4CAF50;
+                    color: white;
+                    border: 1px solid #4CAF50;
+                }
+
+                .pagination a:hover:not(.active) {
+                    background-color: #ddd;
+                }
+
+
+            </style>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+            <div class="wrap">
+                <h1 style="margin-bottom: 5px;"><?php esc_attr_e('Links Report', 'wp-post-link-injector') ?></h1>
+
+                <div class="hsgbysaad_container">
+                    <form action="">
+                        <div style="margin: 10px;">
+
+                            <p style="font-weight: bold; margin-bottom: 0;"><?php esc_attr_e('Total Completed : ', 'wp-post-link-injector');
+                                echo $total_completed; ?>
+                                <span style="float: right;">
+                                Show rows <select name="row_limit" id="row_limit">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="500">500</option>
+                                </select></span>
+                            </p>
+                            <p style="font-weight: bold; margin-top: 0;"><?php esc_attr_e('Total Pending : ', 'wp-post-link-injector');
+                                echo $total_pending; ?>
+                            </p>
+                        </div>
+
+
+                        <?php
+                        $site_url = get_site_url();
+
+                        $row_limit = 10;
+                        if (isset($_GET['row_limit'])) {
+                            $row_limit = $_GET['row_limit'];
+                        }
+
+                        $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+                        $total_pages = ceil($total_rows / $row_limit);
+
+                        $page = 1;
+                        if (isset($_GET['page_no'])) {
+                            $page = $_GET['page_no'];
+                        }
+
+                        $offset = ($page - 1) * $row_limit;
+
+                        $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id DESC LIMIT $offset, $row_limit");
+
+                        ?>
+                        <div style="overflow-x:auto;">
+                            <table>
+                                <tr>
+                                    <th><input type="checkbox" id="checkAll" name="checkAll" value="checkAll"></th>
+                                    <th>Link URL</th>
+                                    <th>Link Created</th>
+                                    <th>WP Post</th>
+                                    <th>Link Injected</th>
+                                    <th>Link Status</th>
+                                </tr>
+                                <?php
+                                foreach ($results as $result) {
+                                    ?>
+                                    <tr>
+                                        <td>
+
+                                            <input type="checkbox" id="checkItem" name="checkItem[]"
+                                                   value="<?php echo $result->id; ?>">
+
+                                        </td>
+                                        <td>
+                                            <?php
+                                            $link = $result->link_url;
+                                            echo '<a href="' . $link . '" target="_blank">' . $link . '</a>';
+                                            ?>
+                                        </td>
+                                        <td><?php echo $result->created_at; ?></td>
+                                        <td>
+                                            <?php
+                                            #### Get Post Title ####
+                                            $post_id = $result->post_id;
+                                            ## get the post link
+                                            $post_link = get_permalink($post_id);
+                                            echo '<a href="' . $post_link . '" target="_blank">' . $post_link . '</a>';
+
+                                            ?>
+                                        </td>
+                                        <td><?php echo $result->updated_at; ?></td>
+                                        <td><?php if ($result->link_status == '1') {
+                                                echo 'Completed';
+                                            } else {
+                                                echo 'Pending';
+                                            } ?>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                            </table>
+                        </div>
+                        <div class="pagination <?php if ($total_pages == 1) {
+                            echo 'hide';
+                        } ?>">
+                            <a href="<?php echo admin_url('admin.php?page=links-report&page_no=1'); ?>">&laquo;</a>
+                            <!--<a href="<?php /*echo admin_url('admin.php?page=links-report&page_no=' . ($page - 1)); */ ?>">&lsaquo;</a>-->
+                            <?php
+                            for ($i = 1; $i <= $total_pages; $i++) {
+                                ?>
+                                <a href="<?php echo admin_url('admin.php?page=links-report&page_no=' . $i); ?>"
+                                   class="<?php echo $page == $i ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                                <?php
+                            }
+                            ?>
+                            <!--<a href="<?php /*echo admin_url('admin.php?page=links-report&page_no=' . ($page + 1)); */ ?>">&rsaquo;</a>-->
+                            <a href="<?php echo admin_url('admin.php?page=links-report&page_no=' . $total_pages); ?>">&raquo;</a>
+                        </div>
+
+                        <br>
+
+
+                        <div class="row">
+                            <div class="col-85">
+                                <div class="oqc_submit_btn">
+
+                                    <button type="submit" class="button button-primary" id="bgbysa_links_dlt_selected"
+                                            name="bgbysa_links_dlt_selected"><?php esc_attr_e('Delete Selected', 'wp-post-link-injector') ?></button>
+
+                                    <button type="submit" class="button button-primary"
+                                            name="bgbysa_links_dlt_completed"><?php esc_attr_e('Delete Completed', 'wp-post-link-injector') ?></button>
+
+                                    <button type="submit" class="button button-primary"
+                                            name="bgbysa_links_dlt_pending"><?php esc_attr_e('Delete Pending', 'wp-post-link-injector') ?></button>
+
+                                    <button type="submit" class="button button-primary"
+                                            name="bgbysa_links_dlt_all"><?php esc_attr_e('Delete All', 'wp-post-link-injector') ?></button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+            <script>
+                $("#checkAll").click(function () {
+                    $('input:checkbox').not(this).prop('checked', this.checked);
+                });
+
+                $(document).ready(function () {
+                    $('select[name="row_limit"]').change(function () {
+
+                        var row_limit = $(this).val();
+                        alert(row_limit);
+
+                    });
+                });
+
+                // button click event
+                $('#bgbysa_links_dlt_selected').click(function () {
+                    var checkItem = [];
+                    $('input[name="checkItem[]"]:checked').each(function () {
+                        checkItem.push($(this).val());
+                    });
+                    if (checkItem.length > 0) {
+                        var confirm_delete = confirm("Are you sure you want to delete selected links?");
+                        if (confirm_delete == true) {
+                            // delete the selected links using xmlhttprequest
+                            var xmlhttp = new XMLHttpRequest();
+                            xmlhttp.onreadystatechange = function () {
+                                if (this.readyState == 4 && this.status == 200) {
+                                    //alert(this.responseText);
+                                    location.reload();
+                                }
+                            };
+                            xmlhttp.open("GET", "<?php echo esc_url($site_url); ?>/wp-content/plugins/wp-post-link-injector/main/ajax.php?checkItem=" + checkItem, true);
+                            xmlhttp.send();
+
+
+
+                        }
+                    } else {
+                        alert("Please select at least one link to delete.");
+                    }
+                });
+
+            </script>
+
+            <?php
+        }
+
+        static function bgbysa_button_action()
+        {
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'post_link_injector';
+
+            ### Delete Selected Links ###
+            if (isset($_POST['bgbysa_links_dlt_selected'])) {
+                if (isset($_POST['checkItem'])) {
+                    $checkItem = $_POST['checkItem'];
+                    foreach ($checkItem as $item) {
+                        $wpdb->delete($table_name, array('id' => $item));
+                    }
+
+                    echo '<div class="notice notice-success is-dismissible">
+                                <p>Selected Links Deleted Successfully!</p>
+                            </div>';
+                }
+            }
+
+
+            ### Delete Completed Links ###
+            if (isset($_POST['bgbysa_links_dlt_completed'])) {
+
+                $wpdb->delete($table_name, array('link_status' => '1'));
+
+                echo '<div class="notice notice-success is-dismissible">
+                                <p>Completed Links Deleted Successfully!</p>
+                            </div>';
+
+                //redirect to the same page
+                wp_redirect(admin_url('admin.php?page=links-report'));
+
+            }
+
+            ### Delete Pending Links ###
+            if (isset($_POST['bgbysa_links_dlt_pending'])) {
+                $wpdb->delete($table_name, array('link_status' => '0'));
+
+                ### Alert Message ###
+                echo '<div class="notice notice-success is-dismissible">
+                            <p>Pending Links Deleted Successfully!</p>
+                        </div>';
+            }
+
+            ### Delete All Links ###
+            if (isset($_POST['bgbysa_links_dlt_all'])) {
+
+                //from pagination delete all
+                if(isset($_GET['page_no'])){
+                    $page_no = $_GET['page_no'];
+                    $offset = ($page_no - 1) * 10;
+                    $wpdb->query("DELETE FROM $table_name LIMIT 10 OFFSET $offset");
+                }else{
+                    $wpdb->query("TRUNCATE TABLE $table_name");
+                }
+
+
+            }
+
+        }
+    }
+
+### Instantiate Class ###
+    new bgbysa_add_links_report_page();
+}
