@@ -1,0 +1,20 @@
+<?php
+
+### get data from database using wpdb
+global $wpdb;
+$table_name = $wpdb->prefix . 'post_link_injector';
+$result = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id ASC");
+
+while ($row = $result->fetch_assoc()) {
+    $array[] = $row;
+}
+
+
+$dataset = array(
+    "echo" => 1,
+    "totalrecords" => count($array),
+    "totaldisplayrecords" => count($array),
+    "data" => $array
+);
+
+echo json_encode($dataset);
