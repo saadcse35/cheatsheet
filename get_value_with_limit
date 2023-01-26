@@ -1,0 +1,1 @@
+$links = $wpdb->get_results("SELECT * FROM $table_name WHERE link_status = 0  LIMIT $link_limit");
