@@ -15,7 +15,11 @@ git push -f origin main
 
 
 ### Generate SSH key Command---
-ssh-keygen -o -t rsa -C "your_email@gmail.com"
+ssh-keygen -o -t rsa -C "saad.cse35@gmail.com"
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
+clip < ~/.ssh/id_rsa.pub
+### then paste it to github settings & save it.
 
 
 ### Primary Command
