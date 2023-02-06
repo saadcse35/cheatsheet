@@ -1,0 +1,58 @@
+<?php
+
+#### If accessed directly, exit
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+if (!class_exists('Insert_Value_In_Form')) {
+    class Insert_Value_In_Form
+    {
+
+        ### Constructor
+        public function __construct()
+        {
+            add_action('frm_entry_form', array('Insert_Value_In_Form', 'insert_value'));
+        }
+
+        ### Insert Value
+        static function insert_value($form)
+        {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'gs_to_formidable';
+            $gs2for_form_id = get_option('gs2for_form_id');
+            $gs2for_field_id = get_option('gs2for_field_id');
+
+            $results = $wpdb->get_results("SELECT * FROM $table_name");
+            $i = 0;
+
+            ## from hidden input field name form_id get value
+            if ($form->id == $gs2for_form_id) { ?>
+                <div id="frm_field_<?php if (!empty('$gs2for_field_id')) echo $gs2for_field_id; ?>]_container" class="frm_form_field form-field  frm_top_container">
+                <label for="field_yamxm" id="field_yamxm_label" class="frm_primary_label">Dropdown
+                    <span class="frm_required" aria-hidden="true"></span>
+                </label>
+                <select name="item_meta[<?php if (!empty('$gs2for_field_id')) echo $gs2for_field_id; ?>]"
+                        id="field_yamxm" data-frmval="5.6" data-invmsg="Dropdown is invalid" aria-invalid="false">
+                    <?php foreach ($results as $result) { ?>
+
+                        <option value="<?php echo $result->price; ?>" selected="selected">
+                            <?php echo $result->serveur; ?>
+                        </option>
+
+                        <?php
+                        $i++;
+                    } ?>
+                </select>
+                </div>
+                <?php
+            }
+            ?>
+            <?php
+
+
+        }
+    }
+
+    new Insert_Value_In_Form();
+}
