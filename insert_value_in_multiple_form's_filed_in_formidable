@@ -1,0 +1,56 @@
+<?php
+
+#### If accessed directly, exit
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+if (!class_exists('Insert_Value_In_Form')) {
+    class Insert_Value_In_Form
+    {
+
+        ### Constructor
+        public function __construct()
+        {
+            add_action('frm_entry_form', array('Insert_Value_In_Form', 'insert_value'));
+        }
+
+        ### Insert Value
+        static function insert_value($form)
+        {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'gs_to_formidable';
+            $field_key = get_option('gs2for_field_key');
+            // separated with ,
+            $field_keys = explode(',', $field_key);
+            //trim space
+            $field_keys = array_map('trim', $field_keys);
+
+            $results = $wpdb->get_results("SELECT * FROM $table_name WHERE status = 'incomplete'");
+            ?>
+
+            <!--jquery integration cdn-->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <!--catch select field which id is field_gs2formid and push option -->
+            <script>
+                $(document).ready(function () {
+                    var results = <?php echo json_encode($results); ?>;
+                    var field_keys = <?php echo json_encode($field_keys); ?>;
+                    field_keys.forEach(function (field_key) {
+                        for (var i = 0; i < results.length; i++) {
+                            $('#field_' + field_key).append('<option value="' + results[i].price + '">' + results[i].serveur + '</option>');
+
+                        }
+                    });
+
+                });
+            </script>
+
+            <?php
+
+
+        }
+    }
+
+    new Insert_Value_In_Form();
+}
