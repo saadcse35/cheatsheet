@@ -1,0 +1,3 @@
+add_action('load-textdomain', function () {
+    load_plugin_textdomain('vat-id-validator', false, plugin_dir_path(__FILE__) . 'languages');
+});
