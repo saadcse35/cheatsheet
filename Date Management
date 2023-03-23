@@ -1,0 +1,239 @@
+<script>
+                                jQuery(document).ready(function ($) {
+
+                                    $('#bysalm_add_loan_loan_duration, #bysalm_user, #bysalm_date_of_app').change(function () {
+                                        var loan_duration = $('select[name="bysalm_add_loan_loan_duration"]').val();
+
+                                        var today_date = $('input[name="bysalm_date_of_app"]').val();
+
+                                        //format today_date in new Date()
+                                        var today_date = today_date.split('-');
+                                        var today = new Date(today_date[0], today_date[1] - 1, today_date[2]);
+
+                                        //var today = new Date();
+                                        var dd = today.getDate();
+                                        var mm = today.getMonth() + 1; //January is 0!
+                                        var yyyy = today.getFullYear();
+
+
+                                        if (dd < 10) {
+                                            dd = '0' + dd
+                                        }
+
+                                        if (mm < 10) {
+                                            mm = '0' + mm
+                                        }
+
+                                        today = yyyy + '-' + mm + '-' + dd;
+                                        $('input[name="bysalm_payment_date"]').val(today);
+
+                                        if (loan_duration == 1) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 1);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 2) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 2);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 3) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 3);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 4) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 4);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 5) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 5);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 6) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 6);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 7) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 7);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 8) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 8);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 9) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 9);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 10) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 10);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 11) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 11);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        } else if (loan_duration == 12) {
+                                            var new_date = new Date(today);
+                                            new_date.setMonth(new_date.getMonth() + 12);
+                                            var dd = new_date.getDate();
+                                            var mm = new_date.getMonth() + 1; //January is 0!
+                                            var yyyy = new_date.getFullYear();
+
+                                            if (dd < 10) {
+                                                dd = '0' + dd
+                                            }
+
+                                            if (mm < 10) {
+                                                mm = '0' + mm
+                                            }
+
+                                            new_date = yyyy + '-' + mm + '-' + dd;
+                                            $('input[name="bysalm_payment_date"]').val(new_date);
+                                        }
+                                    });
+                                });
+
+                            </script>
