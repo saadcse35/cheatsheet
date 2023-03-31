@@ -1,0 +1,578 @@
+<?php
+
+### Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+
+add_action('admin_menu', 'bysa_lm_add_dashboard_page');
+
+if (!function_exists('bysa_lm_add_dashboard_page')) {
+    function bysa_lm_add_dashboard_page()
+    {
+        add_submenu_page(
+            'edit.php?post_type=bysa_loan_management',
+            'Dashboard',
+            'Dashboard',
+            'manage_options',
+            'bysalm_dashboard',
+            'bysalm_add_dashboard_page_callback'
+        );
+    }
+}
+
+if (!function_exists('bysalm_add_dashboard_page_callback')) {
+    function bysalm_add_dashboard_page_callback()
+    {
+        global $wpdb;
+        $user_table_name = $wpdb->prefix . 'bysa_lm_users';
+        $loan_table_name = $wpdb->prefix . 'bysa_lm_loans';
+        $payment_table_name = $wpdb->prefix . 'bysa_lm_payments';
+
+        // Loan Status
+        $users = $wpdb->get_results("SELECT * FROM $user_table_name");
+        $loans = $wpdb->get_results("SELECT * FROM $loan_table_name");
+        $total_loans_number = count($loans);
+        $completed_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '1'");
+        $completed_loans_number = count($completed_loans);
+        $pending_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '0' || loan_status = '2'");
+        $pending_loans_number = count($pending_loans);
+
+
+        ?>
+        <style>
+            .bysalm_add_dashboard {
+                width: 90%;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: white;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .bysalm_add_dashboard table {
+                border-collapse: collapse;
+                border-spacing: 0;
+                width: 100%;
+                border: 1px solid #ddd;
+                font-size: 12px !important;
+            }
+
+            .bysalm_add_dashboard th, td {
+                text-align: left;
+                padding: 8px;
+            }
+
+            .bysalm_add_dashboard tr:nth-child(even) {
+                background-color: #f2f2f2
+            }
+
+
+            .bysalm_add_dashboard input[type=number], input[type=text], input[type=date], input[type=email], select {
+                width: 40%;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+            }
+
+            .bysalm_add_dashboard textarea {
+                width: 50%;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+            }
+
+            .bysalm_add_dashboard label {
+                padding: 12px 12px 2px 0;
+                display: inline-block;
+            }
+
+
+            .bysalm_add_dashboard .oqc_frm_title {
+                font-size: 14px;
+                font-weight: 400;
+            }
+
+            .bysalm_add_dashboard .col-15 {
+
+                width: 25%;
+                margin-top: 6px;
+            }
+
+            .bysalm_add_dashboard .col-85 {
+                float: left;
+                width: 40%;
+                margin-top: 6px;
+            }
+
+
+            /* Clear floats after the columns */
+            .bysalm_add_dashboard .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+
+            @media screen and (min-device-width: 768px) {
+                .bysalm_add_dashboard {
+                    width: 90%;
+                }
+
+            }
+
+
+            @media screen and (max-width: 600px) {
+                .bysalm_add_dashboard {
+                    width: 90%;
+                }
+
+                .bysalm_add_dashboard button[type=submit] {
+                    margin-top: 10px;
+                }
+
+
+                .bysalm_add_dashboard input[type=number], input[type=text], input[type=date], input[type=email], select, textarea, .col-15, .col-85 {
+                    width: 100% !important;
+                    margin-top: 0;
+                }
+
+                .bysalm_add_dashboard input[type=number] {
+                    width: 100% !important;
+                    margin-top: 0;
+                }
+            }
+        </style>
+
+        <!--import jquery-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <div class="wrap">
+
+            <h1><?php esc_attr_e('Dashboard', 'bysaad-loan-management') ?></h1>
+            <p style="margin-top: 0;"><?php esc_attr_e('Here you will get all statistics.', 'bysaad-loan-management') ?></p>
+
+            <div class="bysalm_add_dashboard">
+                <form method="post" action="">
+                    <div class="row">
+
+                        <h1 style="margin-top: 0; font-weight: bold;">LOAN SUMMARY</h1>
+                    </div>
+
+                    <select name="bysalam_loan_stat_user" id="bysalam_loan_stat_user">
+                        <option value="">---Select User---</option>
+                        <?php
+                        if ($users) {
+                            foreach ($users as $user) {
+                                ?>
+                                <option value="<?php echo $user->id ?>"><?php echo $user->first_name . ' ' . $user->last_name; ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
+
+                    <!--set the select field value post value-->
+                    <script>
+                        jQuery(document).ready(function () {
+                            jQuery('#bysalam_loan_stat_user').val('<?php echo $_POST['bysalam_loan_stat_user']; ?>');
+                        });
+                    </script>
+
+                    <button type="submit" class="button button-primary"
+                            name="bysalm_loan_stat_submit"><?php esc_attr_e('Submit', 'bysaad-loan-management') ?>
+                    </button>
+
+                    <?php
+                    if (isset($_POST['bysalm_loan_stat_submit'])) {
+                        if (isset($_POST['bysalam_loan_stat_user']) && !empty($_POST['bysalam_loan_stat_user'])) {
+                            $user_id = $_POST['bysalam_loan_stat_user'];
+
+                            global $wpdb;
+                            $loan_table_name = $wpdb->prefix . 'bysa_lm_loans';
+                            $payment_table_name = $wpdb->prefix . 'bysa_lm_payments';
+                            $user_table_name = $wpdb->prefix . 'bysa_lm_users';
+
+                            $user = $wpdb->get_row("SELECT * FROM $user_table_name WHERE id = $user_id");
+                            $user_name = $user->first_name . ' ' . $user->last_name;
+
+                            $loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE user_id = $user_id");
+                            $total_loans_number = count($loans);
+
+                            $completed_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE user_id = $user_id AND loan_status = '1'");
+                            $completed_loans_number = count($completed_loans);
+
+                            $pending_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE user_id = $user_id AND (loan_status = '0' OR loan_status = '2')");
+                            $pending_loans_number = count($pending_loans);
+                        } else {
+                            $loans = $wpdb->get_results("SELECT * FROM $loan_table_name");
+                            $total_loans_number = count($loans);
+                            $completed_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '1'");
+                            $completed_loans_number = count($completed_loans);
+                            $pending_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '0' || loan_status = '2'");
+                            $pending_loans_number = count($pending_loans);
+
+                        }
+                    } else {
+                        $loans = $wpdb->get_results("SELECT * FROM $loan_table_name");
+                        $total_loans_number = count($loans);
+                        $completed_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '1'");
+                        $completed_loans_number = count($completed_loans);
+                        $pending_loans = $wpdb->get_results("SELECT * FROM $loan_table_name WHERE loan_status = '0' || loan_status = '2'");
+                        $pending_loans_number = count($pending_loans);
+
+                    }
+
+                    ?>
+
+                    <h3>
+                        <span>Total Loans: <?php echo $total_loans_number; ?> | </span>
+                        <span>Active Loans: <?php echo $pending_loans_number; ?> | </span>
+                        <span>Completed Loans: <?php echo $completed_loans_number; ?></span>
+                    </h3>
+
+
+                </form>
+            </div>
+
+        </div>
+
+
+        <div class="wrap">
+            <div class="bysalm_add_dashboard">
+                <div style="overflow-x:auto;">
+                    <form method="post" action="">
+                        <div class="row">
+                            <h1 style="margin-top: 0; font-weight: bold;">Upcoming Payments</h1>
+                        </div>
+
+                        <select name="bysalam_upcoming_payment_user" id="bysalam_upcoming_payment_user">
+                            <option value="">---Select User---</option>
+                            <?php
+                            if ($users) {
+                                foreach ($users as $user) {
+                                    ?>
+                                    <option value="<?php echo $user->id ?>"><?php echo $user->first_name . ' ' . $user->last_name; ?></option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </select>
+
+                        <!--set the select field value post value-->
+                        <script>
+                            jQuery(document).ready(function () {
+                                jQuery('#bysalam_upcoming_payment_user').val('<?php echo $_POST['bysalam_upcoming_payment_user']; ?>');
+                            });
+                        </script>
+                        <button type="submit" class="button button-primary"
+                                name="bysalm_upcoming_payment_stat_submit"><?php esc_attr_e('Submit', 'bysaad-loan-management') ?>
+                        </button>
+
+
+                        <table style="margin-top: 10px;">
+                            <tr>
+                                <th>
+                                    <span>User</span>
+                                </th>
+                                <th>
+                                    <span>Loan ID</span>
+                                </th>
+                                <th>
+                                    Due Date
+                                </th>
+                                <th>
+                                    Payment Amount
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                            </tr>
+
+                            <?php
+                            global $wpdb;
+                            $loan_table = $wpdb->prefix . 'bysa_lm_loans';
+                            $user_table = $wpdb->prefix . 'bysa_lm_users';
+                            $today = date('Y-m-d');
+                            if (isset($_POST['bysalm_upcoming_payment_stat_submit']) && $_POST['bysalam_upcoming_payment_user'] != '') {
+                                $user_id = $_POST['bysalam_upcoming_payment_user'];
+
+                                $results = $wpdb->get_results("SELECT * FROM $loan_table WHERE payment_date > '$today' AND user_id = '$user_id' ORDER BY id DESC LIMIT 10");
+
+
+                            } else {
+                                $results = $wpdb->get_results("SELECT * FROM $loan_table WHERE payment_date > '$today' ORDER BY id DESC LIMIT 10");
+                            }
+
+                            foreach ($results as $result) {
+
+
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        $user_id = $result->user_id;
+                                        $user = $wpdb->get_row("SELECT * FROM $user_table WHERE id = '$user_id'");
+                                        echo $user->first_name . ' ' . $user->last_name;
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        echo $result->id;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        $loan_duration = $result->loan_duration;
+                                        for ($i = 1; $i <= $loan_duration; $i++) {
+                                            $application_date = $result->date_of_application;
+                                            $payment_date = date('Y-m-d', strtotime($application_date . ' + ' . $i . ' month'));
+
+                                            if ($payment_date >= $today) {
+                                                echo $payment_date;
+                                                break;
+                                            }
+
+                                        }
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo $result->loan_amount;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo $result->loan_status;
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+
+                        </table>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="wrap">
+            <div class="bysalm_add_dashboard">
+                <div style="overflow-x:auto;">
+                    <form method="post" action="">
+                        <div class="row">
+                            <h1 style="margin-top: 0; font-weight: bold;">Payment History</h1>
+                        </div>
+
+                        <select name="bysalam_payment_hist_user" id="bysalam_payment_hist_user">
+                            <option value="">---Select User---</option>
+                            <?php
+                            if ($users) {
+                                foreach ($users as $user) {
+                                    ?>
+                                    <option value="<?php echo $user->id ?>"><?php echo $user->first_name . ' ' . $user->last_name; ?></option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </select>
+
+                        <!--set the select field value post value-->
+                        <script>
+                            jQuery(document).ready(function () {
+                                jQuery('#bysalam_payment_hist_user').val('<?php echo $_POST['bysalam_payment_hist_user']; ?>');
+                            });
+                        </script>
+
+                        <button type="submit" class="button button-primary"
+                                name="bysalm_payment_hist_stat_submit"><?php esc_attr_e('Submit', 'bysaad-loan-management') ?>
+                        </button>
+
+
+                        <table style="margin-top: 10px;">
+                            <tr>
+                                <th>
+                                    <span>User</span>
+                                </th>
+                                <th>
+                                    <span>Loan ID</span>
+                                </th>
+                                <th>
+                                    Payment Date
+                                </th>
+                                <th>
+                                    Payment Amount
+                                </th>
+                                <th>
+                                    Payment Method
+                                </th>
+                            </tr>
+
+                            <?php
+                            global $wpdb;
+                            $loan_table = $wpdb->prefix . 'bysa_lm_loans';
+                            $user_table = $wpdb->prefix . 'bysa_lm_users';
+                            $payment_table = $wpdb->prefix . 'bysa_lm_payments';
+
+                            if (isset($_POST['bysalm_payment_hist_stat_submit']) && $_POST['bysalam_payment_hist_user'] != '') {
+                                $user_id = $_POST['bysalam_payment_hist_user'];
+
+                                $loan_ids = $wpdb->get_results("SELECT id FROM $loan_table WHERE user_id = '$user_id'");
+
+                                // make array of loan ids
+                                $loan_ids_array = array();
+                                foreach ($loan_ids as $loan_id) {
+                                    $loan_ids_array[] = $loan_id->id;
+                                }
+
+                                $results = $wpdb->get_results("SELECT * FROM $payment_table WHERE loan_id IN (" . implode(',', $loan_ids_array) . ") ORDER BY id DESC LIMIT 10");
+
+                            } else {
+                                $results = $wpdb->get_results("SELECT * FROM $payment_table ORDER BY id DESC LIMIT 10");
+                            }
+
+                            foreach ($results as $result) {
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        $loan_id = $result->loan_id;
+                                        $user_id = $wpdb->get_var("SELECT user_id FROM $loan_table WHERE id = '$loan_id'");
+                                        $user = $wpdb->get_row("SELECT * FROM $user_table WHERE id = '$user_id'");
+                                        echo $user->first_name . ' ' . $user->last_name;
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        echo $result->loan_id;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo $result->payment_date;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo $result->actual_payment_amount;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        echo $result->payment_method;
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="wrap">
+            <div class="bysalm_add_dashboard">
+                <h1 style="margin-top: 0; font-weight: bold;">Total Amount Out</h1>
+                <form method="post" action="">
+                    <select name="bysalam_ttl_amn_out_user" id="bysalam_ttl_amn_out_user">
+                        <option value="">---Select User---</option>
+                        <?php
+                        if ($users) {
+                            foreach ($users as $user) {
+                                ?>
+                                <option value="<?php echo $user->id ?>"><?php echo $user->first_name . ' ' . $user->last_name; ?></option>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </select>
+
+                    <!--set the select field value post value-->
+                    <script>
+                        jQuery(document).ready(function () {
+                            jQuery('#bysalam_ttl_amn_out_user').val('<?php echo $_POST['bysalam_ttl_amn_out_user']; ?>');
+                        });
+                    </script>
+
+                    <button type="submit" class="button button-primary"
+                            name="bysalm_ttl_amn_out_submit"><?php esc_attr_e('Submit', 'bysaad-loan-management') ?>
+                    </button>
+
+                    <?php
+                    if (isset($_POST['bysalm_ttl_amn_out_submit']) && $_POST['bysalam_ttl_amn_out_user'] != '') {
+                        $user_id = $_POST['bysalam_ttl_amn_out_user'];
+
+                        $loan_ids = $wpdb->get_results("SELECT id FROM $loan_table WHERE user_id = '$user_id'");
+
+                        // make array of loan ids
+                        $loan_ids_array = array();
+                        foreach ($loan_ids as $loan_id) {
+                            $loan_ids_array[] = $loan_id->id;
+                        }
+
+                        $total_amount_out_loan = $wpdb->get_var("SELECT SUM(loan_amount) FROM $loan_table WHERE id IN (" . implode(',', $loan_ids_array) . ") AND (loan_status = '0' OR loan_status = '2')");
+
+                        //get all payment amount against loan ids
+                        $total_amount_out_payment = $wpdb->get_var("SELECT SUM(actual_payment_amount) FROM $payment_table WHERE loan_id IN (" . implode(',', $loan_ids_array) . ")");
+
+                        $total_amount_out = $total_amount_out_loan - $total_amount_out_payment;
+
+                    } else {
+                        $total_amount_out_loan = $wpdb->get_var("SELECT SUM(loan_amount) FROM $loan_table WHERE loan_status = '0' OR loan_status = '2'");
+
+                        //get all payment amount
+                        $total_amount_out_payment = $wpdb->get_var("SELECT SUM(actual_payment_amount) FROM $payment_table");
+
+                        $total_amount_out = $total_amount_out_loan - $total_amount_out_payment;
+                    }
+                    ?>
+
+                    <div class="row">
+                        <h3>
+                            <span>Total Amount Out: <?php echo $total_amount_out; ?></span>
+                        </h3>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+
+        <div class="wrap">
+            <div class="bysalm_add_dashboard">
+                <h1 style="margin-top: 0; font-weight: bold;">Bank Fees Lost</h1>
+                <form method="post" action="">
+                    <?php
+                    //sum of all bank fees
+                    $bank_fees = $wpdb->get_var("SELECT SUM(payment_method_cost) FROM $payment_table");
+
+                    ?>
+
+                    <div class="row">
+                        <h3>
+                            <span>Total Bank Fees Lost: <?php echo $bank_fees; ?></span>
+                        </h3>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+
+        <?php
+    }
+}
+
