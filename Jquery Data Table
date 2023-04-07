@@ -1,0 +1,330 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.10.1/standard/ckeditor.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<style>
+.btn-primary.active:hover,.btn-primary.active:focus {
+    background-color: #286090;
+    border-color: #204d74;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto 15% auto;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 50%;
+    margin-left: 31%;
+}
+#example a {
+    cursor: pointer;
+    background-color: #663898;
+    color: #fff;
+    padding: 4px 12px;
+    text-decoration: none;
+}
+.loading.icon {
+    background-color: #ffffff;
+    background-image: url(../wp-content/plugins/brauer-facility-users-management/img/loader.gif);
+    background-size: 25px 25px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.delete {
+    cursor: pointer;
+}
+</style>
+<script type ="text/javascript">
+jQuery(document).ready(function(){
+  var modal = document.getElementById('myModalRequest');
+  var modalEdit = document.getElementById('myModalRequestEdit');
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+	  if (event.target == modalEdit) {
+          modalEdit.style.display = "none";
+      }
+  }
+
+  jQuery(".close").click(function(){
+    modal.style.display = "none";
+	  modalEdit.style.display = "none";
+  });
+
+ jQuery("body").on('click',"#addTaskButton", function(e){
+    e.preventDefault();
+    var taskname = jQuery('#taskname').val();
+    var locationname = jQuery('#locationname option:selected').val();
+    if(taskname == ''){
+      alert('Please enter tasks!');
+      return false;
+    }
+    if(locationname == ''){
+      alert('Please select location!');
+      return false;
+    }
+    var formdata = new FormData(jQuery("#addNewTask")[0]) ;
+
+    jQuery("#addTaskButton").addClass('loading icon') ;
+    jQuery("#addTaskButton").prop('disabled', true);
+    var ajax_url = '<?php echo admin_url('admin-ajax.php'); ?>';
+    jQuery.ajax({
+      url:ajax_url,
+      type:"POST",
+      processData: false,
+      contentType: false,
+      data:  formdata,
+      dataType: 'json',
+      success : function( response ){
+        console.log(response);
+        jQuery("#addTaskButton").removeClass('loading icon') ;
+              jQuery("#addTaskButton").prop('disabled', false);
+        if(response.success == 0)
+        {
+          alert(response.message);
+        }
+        else{
+          alert(response.message);
+          jQuery('#addNewTask')[0].reset();
+          window.setTimeout(function(){location.reload(true)},1000)
+        }
+
+      },
+    });
+    return false;
+  });
+	
+  jQuery("body").on('click',"#updateTaskButton", function(e){
+    e.preventDefault();
+    var edittaskname = jQuery('#edittaskname').val();
+	  var edittaskid = jQuery('#edittaskid').val();
+    var locationUpdate = jQuery('#locationUpdate').val();
+    if(edittaskname == ''){
+      alert('Please enter tasks!');
+      return false;
+    }
+    if(locationUpdate == ''){
+      alert('Please select location!');
+      return false;
+    }
+    jQuery(this).addClass('loading icon') ;
+    jQuery(this).prop('disabled', true);
+    var ajax_url = '<?php echo admin_url('admin-ajax.php'); ?>';
+    jQuery.ajax({
+      type: "POST",
+      url: ajax_url,
+      data: { action: "brauer_update_task", taskid: edittaskid, locationId: locationUpdate , tasknames:edittaskname },
+      dataType: 'json',
+      success: function( response ) {
+        console.log(response);
+        jQuery("#updateTaskButton").removeClass('loading icon') ;
+        jQuery("#updateTaskButton").prop('disabled', false);
+        if(response.success == 0)
+        {
+          alert(response.message);
+        }
+        else{
+          alert(response.message);
+          window.setTimeout(function(){location.reload(true)},1000)
+        }
+      }
+    });
+    return false;
+     
+  });
+
+  jQuery("body").on('click',".brauerTasksDelete", function(e){
+    e.preventDefault();
+    var taskId = jQuery(this).data("id");
+    jQuery(this).addClass('loading icon') ;
+    jQuery(this).prop('disabled', true);
+    var ajax_url = '<?php echo admin_url('admin-ajax.php'); ?>';
+    jQuery.ajax({
+      type: "POST",
+      url: ajax_url,
+      data: { action: "brauer_delete_task", taskid: taskId },
+      dataType: 'json',
+      success: function( response ) {
+        console.log(response);
+        jQuery(".brauerLocationsDelete").removeClass('loading icon') ;
+        jQuery(".brauerLocationsDelete").prop('disabled', false);
+        if(response.success == 0)
+        {
+          alert(response.message);
+        }
+        else{
+          alert(response.message);
+          window.setTimeout(function(){location.reload(true)},1000)
+        }
+      }
+    });
+    return false;
+  })
+	
+  jQuery("body").on('click',".brauerTasksEdit", function(e){
+       e.preventDefault();
+       var taskId = jQuery(this).data("id");
+	     var tasks = jQuery(this).data("tasks");
+       var locations = jQuery(this).data("locations");
+       jQuery("#edittaskname").val(tasks);
+	     jQuery("#edittaskid").val(taskId);
+
+       jQuery('.locationUpdate option[value='+locations+']').attr('selected','selected');
+
+	     var modalsEdit = document.getElementById('myModalRequestEdit');
+       modalsEdit.style.display = "block";
+  });
+
+  jQuery('#example').DataTable();
+
+
+});
+function addTask(){
+  var modals = document.getElementById('myModalRequest');
+  modals.style.display = "block";
+}
+</script>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 class="well"><span>Tasks</span><button onclick="addTask()" style="float:right;">Add</button></h2>
+      <table class="table table-bordered" id="example">
+        <thead>
+          <tr>
+            <th>S.No.</th>
+            <th>Tasks</th>
+            <th>Location</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+            global $wpdb;
+            $tableBrauerTasks = $wpdb->prefix . 'brauer_facility_tasks_details';
+            $tableBrauerLocations = $wpdb->prefix . 'brauer_facility_locations_details';
+            $uid = get_current_user_id() ;
+            $taskDetails = $wpdb->get_results( "SELECT * FROM $tableBrauerTasks" );
+            $sno = 0;
+
+            $rowcount = $wpdb->num_rows;
+            if(($rowcount < 0) || ($rowcount == 0)){
+              echo '<tr><td colspan="5" style="text-align: center;">No tasks Found</td></tr>';
+            }else{
+
+              foreach($taskDetails as $task){
+                $taskId = $task->id;
+                $tasks = $task->tasks;
+                $locationId = $task->locationId;
+                $sno++;
+
+                $locationName = '';
+
+                $locationsTable = $wpdb->get_results( "SELECT * FROM $tableBrauerLocations where id=$locationId" );
+
+                
+                foreach($locationsTable as $loc){
+                  $locationName = $loc->location;                  
+                }
+            
+                echo '<tr><td>'.$sno.'</td><td>'.$tasks.'</td><td>'.$locationName.'</td><td><a class="brauerTasksEdit" data-id="'.$taskId.'" data-tasks="'.$tasks.'" data-locations="'.$locationId.'" style="margin-right: 8px;">Edit</a><a class="brauerTasksDelete" data-id="'.$taskId.'">Delete</a></td></tr>';
+              }
+
+            }
+          ?>
+          
+        </tbody>
+      </table>
+
+      <div id="myModalRequest" class="modal">
+          <!-- Modal content -->
+          <div class="modal-content">
+              <h4 class="well">Add New Task <span id="sharenameset"></span><span class="close ">&times;</span></h4>
+          <div class="well location-response">
+            <p id="successMsg" style="color: green; display:none;">Task added successfully</p>
+            <form action="" method="post" enctype="multipart/form-data" id="addNewTask">
+                <div class="form-group">
+                  <label for="taskname">Tasks Name(Comma separated tasks)(*):</label>
+                  <textarea class="form-control" id="taskname" placeholder="Enter task name" rows="8" name="taskname" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="locationname">Assigned To Location(*):</label>
+                  <select class="form-control" id="locationname" name="locationname" style="max-width: 100%;" required>
+                    <option value="">Select Location</option>
+                    <?php
+
+                    global $wpdb;
+                    $tableBrauerLocations = $wpdb->prefix . 'brauer_facility_locations_details';
+                    $uid = get_current_user_id() ;
+                    $locationsTable = $wpdb->get_results( "SELECT * FROM $tableBrauerLocations" );
+                    foreach($locationsTable as $location){
+                      $locationId = $location->id;
+                      $locationName = $location->location;
+                    
+                      echo '<option value="'.$locationId.'">' . $locationName . '</option>';
+                    }
+                    ?>
+                  </select>
+                </div>
+                      
+                <div class="form-group">
+                    <input type="hidden" name="action" value="submit_tasks">
+                </div>
+                <button type="submit" class="btn btn-default" id="addTaskButton">Add</button>
+            </form>
+          </div>
+          </div>
+      </div>
+		
+	  <div id="myModalRequestEdit" class="modal">
+          <!-- Modal content -->
+          <div class="modal-content">
+              <h4 class="well">Edit Task <span id="sharenameset"></span><span class="close ">&times;</span></h4>
+			  <div class="well location-response">
+				<form action="" method="post" enctype="multipart/form-data" id="editNewTask">
+					<div class="form-group">
+					  <label for="edittaskname">Tasks Name(Comma separated tasks)(*):</label>
+					  <textarea class="form-control" id="edittaskname" rows="8" name="edittaskname" required></textarea>
+					</div>
+          <div class="form-group">
+                  <label for="locationUpdate">Assigned To Location(*):</label>
+                  <select class="form-control locationUpdate" id="locationUpdate" name="locationUpdate" style="max-width: 100%;" required>
+                    <option value="">Select Location</option>
+                    <?php
+                    foreach($locationsTable as $loc){
+                      $locationName = $loc->location;
+                      $locationNameId = $loc->id;
+                      echo '<option value="'.$locationNameId.'">' . $locationName . '</option>';
+                    }
+                    ?>
+                  </select>
+          </div>
+					<div class="form-group">
+						<input type="hidden" name="action" value="submit_tasks">
+						<input type="hidden" name="edittaskid" id="edittaskid">
+					</div>
+					<button type="submit" class="btn btn-default" id="updateTaskButton">Update</button>
+				</form>
+			  </div>
+          </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+           
