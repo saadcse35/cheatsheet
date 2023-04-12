@@ -1,0 +1,29 @@
+function submit_location_callback(){
+
+    $locationname = $_POST['locationname'];
+    $locationlat = $_POST['locationlat'];
+    $locationlong = $_POST['locationlong'];
+    $locationUser = $_POST['locationUser'];
+    
+    global $wpdb;
+    $tableBrauerLocations = $wpdb->prefix . 'brauer_facility_locations_details';
+    $saveFieldArray=array(
+    'location' => $locationname,
+    'locationLat' => $locationlat,
+    'locationLong' => $locationlong,
+    'locationAssignedUserId' => $locationUser
+    );
+    $res = $wpdb->insert( $tableBrauerLocations, $saveFieldArray);
+
+    if($res == 1)
+   {
+    die(json_encode(array('success'=> 1, 'message' => __('Location added successfully!', 'wp-brauer'))));
+   }
+   else{
+    die(json_encode(array('success'=> 0, 'message' => __('Error', 'wp-brauer'))));
+   }
+       
+}
+
+add_action('wp_ajax_nopriv_brauer_delete_location', 'brauer_delete_location_callback');
+add_action( 'wp_ajax_brauer_delete_location', 'brauer_delete_location_callback' );
