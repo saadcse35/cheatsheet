@@ -1,0 +1,37 @@
+<?php
+                            global $wpdb;
+                            $loan_table = $wpdb->prefix . 'bysa_lm_loans';
+                            $user_table = $wpdb->prefix . 'bysa_lm_users';
+                            $payment_table = $wpdb->prefix . 'bysa_lm_payments';
+                            $loans = $wpdb->get_results("SELECT * FROM $loan_table");
+                            foreach ($loans as $loan) {
+                                $user_id = $loan->user_id;
+                                $user = $wpdb->get_row("SELECT * FROM $user_table WHERE id = $user_id");
+                                $user_full_name = $user->first_name . ' ' . $user->last_name;
+
+                                $loan_id = $loan->id;
+                                $loan = $wpdb->get_row("SELECT * FROM $loan_table WHERE id = $loan_id");
+                                $total_paid = $wpdb->get_var("SELECT SUM(actual_payment_amount) FROM $payment_table WHERE loan_id = $loan_id");
+                                $total_due = $loan->loan_amount - $total_paid;
+
+                                if($total_due == 0 || $total_due < 0){
+                                    continue;
+                                }
+
+                                ?>
+                                <option value="<?php echo $loan->id ?>"><?php echo $loan->id;
+                                    echo ' - ';
+                                    echo $user_full_name;
+                                    echo ' - ';
+                                    echo '(Loan: ' . $loan->loan_amount . ')';
+                                    if ($total_paid != '') {
+                                        echo ' - ';
+                                        echo '(Paid: ' . $total_paid . ')';
+                                    }
+                                    if ($total_due != '') {
+                                        echo ' - ';
+                                        echo '(Due: ' . $total_due . ')';
+                                    } ?></option>
+                                <?php
+                            }
+                            ?>
