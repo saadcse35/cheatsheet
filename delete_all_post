@@ -1,0 +1,15 @@
+### Delete All Posts ###
+                if (isset($_POST['bgbysa_dlt_all_posts'])) {
+                    ### get all post_id from wp_post_link_injector table
+                    $all_logs = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id ASC");
+
+                    ### delete all post from post table
+                    foreach ($all_logs as $log) {
+                        ## delete post
+                        wp_delete_post($log->post_id, true);
+                        ## truncate post log table
+                        $wpdb->query("TRUNCATE TABLE $table_name");
+
+                    }
+
+                }
