@@ -1,0 +1,27 @@
+### Export Data ###
+                if (isset($_POST['bgbysa_export_post_data'])) {
+
+                    $results = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id DESC");
+                    $total_link_count = count($results);
+                    $date = date('Y-m-d');
+
+                    $filename = "post_report_$date.csv";
+                    $fp = fopen('php://output', 'w');
+
+                    if ($fp && $results) {
+                        header('Content-Type: text/csv');
+                        header('Content-Disposition: attachment; filename="' . $filename . '"');
+                        header('Pragma: no-cache');
+                        header('Expires: 0');
+                        fputcsv($fp, array('SL', 'Post Link', 'Injected Links', 'Created At',));
+                        foreach ($results as $result) {
+
+                            $post_link = get_permalink($result->post_id);
+
+                            fputcsv($fp, array($total_link_count, $post_link, $result->link_amount, $result->created_at));
+                            $total_link_count--;
+                        }
+                        die;
+                    }
+
+                }
