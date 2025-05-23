@@ -1,0 +1,2 @@
+### Zip folder in vps server (media_root folder)
+zip -r media_root.zip media_root
