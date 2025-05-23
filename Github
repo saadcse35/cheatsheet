@@ -43,3 +43,10 @@ git push -u origin main
 
 ### Command of git stash
 git stash
+
+
+### git clean remote origin
+git remote remove origin
+
+### git branch name change (master to main)
+git branch -m master main
